@@ -4,7 +4,7 @@
 
 *OpenAPI-cпецификация*
 
-[openapi3_0.yaml](openapi.yaml)
+[openapi.yaml](openapi.yaml)
 
 *Сгенерированный Java/Spring-код сервиса*
 
