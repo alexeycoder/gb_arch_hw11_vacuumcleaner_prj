@@ -1,0 +1,674 @@
+openapi: 3.1.0
+info:
+  title: Smart Home Symcon Service
+  description: API сервис управления устройствами умного дома.
+  contact:
+    name: Alexey Kuznetsov
+    url: https://github.com/alexeycoder
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080/v1
+    description: Test server
+  - url: https://symcon.ru/v1
+    description: Production server
+tags:
+  - name: users
+    description: Операции над пользователями.
+  - name: schedules
+    description: Операции над расписаниями работ для устройств.
+  - name: groups
+    description: Операции над группами совместного пользования устройствами.
+  - name: devices
+    description: Операции над устройствами.
+    
+paths:
+
+  /users:
+    post:
+      tags:
+        - users
+      summary: Добавить пользователя
+      description: Добавить пользователя
+      operationId: addUser
+      requestBody:
+        description: Создание нового пользователя в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          description: Created successfully
+        '400':
+          description: Invalid user data supplied
+        '405':
+          description: Invalid input
+          
+  /users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Найти пользователя по идентификатору
+      description: Получить одного пользователя
+      operationId: findUserById
+      parameters:
+        - name: userId
+          in: path
+          description: Идентификатор пользователя
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+    put:
+      tags:
+        - users
+      summary: Обновляет данные пользователя
+      description: Обновляет данные пользователя по идентификатору
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: Идентификатор пользователя
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Обновление данных пользователя в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
+    delete:
+      tags:
+        - users
+      summary: Удаляет пользователя
+      description: Удаляет пользователя
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: Идентификатор пользователя
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+
+
+  /groups:
+    post:
+      tags:
+        - groups
+      summary: Добавить группу
+      description: Добавить группу пользователей совместного пользования устройствами
+      operationId: addGroup
+      parameters:
+        - name: username
+          in: header
+          description: Имя для входа пользователя
+          required: true
+          schema:
+            type: string
+            format: email
+      requestBody:
+        description: Создание новой группы пользоватей в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        '201':
+          description: Created successfully
+        '400':
+          description: Invalid group data supplied
+        '405':
+          description: Invalid input
+
+  /groups/{groupId}:
+    get:
+      tags:
+        - groups
+      summary: Найти группу по идентификатору
+      description: вернуть группу
+      operationId: findGroupById
+      parameters:
+        - name: username
+          in: header
+          description: Имя для входа пользователя
+          required: true
+          schema:
+            type: string
+            format: email
+        - name: groupId
+          in: path
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+
+    put:
+      tags:
+        - groups
+      summary: Обновить группу
+      description: Обновить группу пользователей совместного пользования устройствами
+      operationId: updateGroup
+      parameters:
+        - name: username
+          in: header
+          description: Имя для входа пользователя
+          required: true
+          schema:
+            type: string
+            format: email
+        - name: groupId
+          in: path
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Обновить группу
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: Group not found
+
+    delete:
+      tags:
+        - groups
+      summary: Удаляет пользователя
+      description: Удаляет пользователя
+      operationId: deleteGroup
+      parameters:
+        - name: username
+          in: header
+          description: Имя для входа пользователя
+          required: true
+          schema:
+            type: string
+            format: email
+        - name: groupId
+          in: path
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+
+
+  /devices:
+    post:
+      tags:
+        - devices
+      summary: Добавить устройство
+      description: Добавить устройство
+      operationId: addDevice
+      parameters:
+        - name: groupId
+          in: header
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Создание нового устройства в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '201':
+          description: Created successfully
+        '400':
+          description: Invalid device data supplied
+        '401':
+          description: Unauthorized
+
+  /devices/{deviceId}:
+    put:
+      tags:
+        - devices
+      summary: Обновить робота
+      description: Обновить робота
+      operationId: updateRobot
+      parameters:
+        - name: groupId
+          in: header
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: deviceId
+          in: path
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Обновить данные устройства в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: Device not found
+
+    delete:
+      tags:
+        - devices
+      summary: Удаляет робота
+      description: Удаляет робота
+      operationId: deleteRobot
+      parameters:
+        - name: groupId
+          in: header
+          description: Идентификатор группы
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: deviceId
+          in: path
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Deleted successfully
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+
+
+  /devices/{deviceId}/schedules:
+    get:
+      tags:
+        - schedules
+      summary: Добавить график работ
+      description: Добавить график работ
+      operationId: findAllSchedules
+      parameters:
+        - name: deviceId
+          in: path
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+
+    post:
+      tags:
+        - schedules
+      summary: Добавить график работ
+      description: Добавить график работ
+      operationId: addSchedule
+      parameters:
+        - name: deviceId
+          in: path
+          description: Идентификатор устройства
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Создание нового устройства в базе
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+        required: true
+      responses:
+        '201':
+          description: Created successfully
+        '400':
+          description: Invalid ID or data supplied
+        '401':
+          description: Unauthorized
+
+
+  /schedules/{scheduleId}:
+    get:
+      tags:
+        - schedules
+      summary: Найти график работ по идентификатору
+      description: Найти график работ по идентификатору
+      operationId: findScheduleById
+      parameters:
+        - name: scheduleId
+          in: path
+          description: Идентификатор расписания
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: Schedule not found
+
+    put:
+      tags:
+        - schedules
+      summary: Обновить график работ
+      description: Обновить график работ
+      operationId: updateSchedule
+      parameters:
+        - name: scheduleId
+          in: path
+          description: Идентификатор расписания
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Обновить график работ
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+        required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+        '401':
+          description: Unauthorized
+        '404':
+          description: Schedule not found
+
+
+components:
+  schemas:
+  
+    User:
+      required:
+        - username
+        - password
+        - name
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          examples: 
+            - 123
+        username:
+          type: string
+          format: email
+          examples:
+            - johnsmith@yandex.ru
+          description: Адрес эл. почты пользователя в качестве имени для входа
+        password:
+          type: integer
+          format: int64
+          description: Хэш пароля
+        name:
+          type: string
+          examples:
+            - John Smith
+          description: Отображаемое имя пользователя
+
+    Group:
+      required:
+        - name
+        - members
+      type: object
+      properties:
+        groupId:
+          type: integer
+          format: int64
+          examples:
+            - 123
+        name:
+          type: string
+          examples:
+            - "Семья"
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: integer
+                format: int64
+          examples:
+            - "- userId: 5
+               - userId: 8
+               "
+
+    Connection:
+      required:
+        - ssid
+        - passphrase
+      type: object
+      properties:
+        connectionId:
+          type: integer
+          format: int64
+          examples:
+            - 123
+        ssid:
+          type: string
+        passphrase:
+          type: string
+          format: password
+
+    Device:
+      required:
+        - typeId
+        - name
+        - modelId
+        - serialNum
+        - firmwareVersion
+        - connectionId
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int64
+          examples:
+            - 123
+        typeId:
+          type: integer
+          format: int32
+          examples:
+            - 1
+            - 2
+          description: Код производителя типа устройства, например, 1 - робот-пылесос
+        name:
+          type: string
+          examples:
+            - Робот Кузя
+        modelId:
+          type: integer
+          format: int32
+        serialNum:
+          type: string
+          examples:
+            - "6a0fa287-6969-4839"
+        firmwareVersion:
+          type: integer
+          format: int32
+          examples:
+            - 2
+        connectionId:
+          type: integer
+          format: int64
+          examples:
+            - 123
+
+    DeviceState:
+      required:
+        - chargeLevel
+        - isCharging
+        - batteryHealth
+        - currentServiceId
+        - currentServicePropertiesCode
+        - connectionUrl
+      type: object
+      properties:
+        chargeLevel:
+          type: integer
+          format: int32
+          examples:
+            - 0
+            - 100
+        isCharging:
+          type: boolean
+        batteryHealth:
+          type: integer
+          format: int32
+          examples:
+            - 80
+        currentServiceId:
+          type: integer
+          format: int32
+        currentServicePropertiesCode:
+          type: integer
+          format: int64
+          examples:
+            - 0xFFFFFFFF
+        connectionUrl:
+          type: string
+          format: uri
+          examples:
+            - "192.168.1.123:45678"
+
+    Schedule:
+      required:
+        - deviceId
+        - dayOfWeek
+        - timeOfDay
+        - serviceTypeId
+        - servicePropertiesCode
+      type: object
+      properties:
+        scheduleId:
+          type: integer
+          format: int64
+          examples:
+            - 123
+        dayOfWeek:
+          type: integer
+          format: int32
+        timeOfDay:
+          type: string
+          format: time
+          examples:
+            - "10:35"
+        serviceTypeId:
+          type: integer
+          format: int32
+        servicePropertiesCode:
+          type: integer
+          format: int64
+          examples:
+            - 0xFFFFFFFF
+

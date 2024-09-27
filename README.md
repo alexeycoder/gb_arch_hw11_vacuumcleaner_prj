@@ -1,1 +1,13 @@
-# gb_arch_hw11_vacuumcleaner_prj
+# Урок 11. Сервис-ориентированные архитектуры
+
+## Проект спецификации OpenAPI к облачному REST сервису управления домашними устройствами (роботами-пылесосами)
+
+*OpenAPI-cпецификация*
+
+[openapi3_0.yaml](openapi.yaml)
+
+*Сгенерированный Java/Spring-код сервиса*
+
+См.: [spring-server/](spring-server)
+
+
